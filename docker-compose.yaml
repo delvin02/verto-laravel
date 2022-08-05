@@ -1,0 +1,48 @@
+services:
+  code-challenge:
+    build:
+      context: ./deploy/
+      dockerfile: local.Dockerfile
+      args:
+        WWWGROUP: '${WWWGROUP}'
+        PORT: 80
+    image: code-challenge
+    container_name: code-challenge
+    ports:
+      - 80:80
+    environment:
+      WWWUSER: '${WWWUSER}'
+    volumes:
+      - '.:/var/www/html/'
+    networks:
+      - code-challenge-network
+    depends_on:
+      - mariadb
+    links:
+      - mariadb
+  mariadb:
+    image: 'mariadb:latest'
+    container_name: code-challenge-db
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    env_file: ./deploy/db.env
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - 'mariadb:/var/lib/mysql'
+    networks:
+      - code-challenge-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+      retries: 3
+      timeout: 5s
+networks:
+  code-challenge-network:
+    driver: bridge
+volumes:
+  mariadb:
+    driver: local
