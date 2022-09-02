@@ -5,7 +5,7 @@
 A code challenge for applicants to demonstrate their developement skills and knowledge
 
 ### Challenge
-You are to create a media library app using this laravel app and vue js.
+You are to create a media library app (with frontend and backend) using this laravel app and vue js.
 The app must be able to do the following:
 * Allows the user to search for images from unsplash
 * Allows the user to select an image to add to the media library with addition information such as title and default alt text
